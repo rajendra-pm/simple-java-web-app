@@ -55,8 +55,8 @@ jobs:
 
           # SSH into EC2 and deploy Docker container
           ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST "
-            docker rm -f simple-java-webapp || true
-            docker pull $DOCKER_HUB_USERNAME/simple-java-webapp:latest
-            docker run -d --name simple-java-webapp -p 8080:8080 $DOCKER_HUB_USERNAME/simple-java-webapp:latest
+            docker rm -f simple-java-web-app || true
+            docker pull $DOCKER_HUB_USERNAME/simple-java-web-app:latest
+            docker run -d --name simple-java-web-app -p 8080:8080 $DOCKER_HUB_USERNAME/simple-java-web-app:latest
           "
 
