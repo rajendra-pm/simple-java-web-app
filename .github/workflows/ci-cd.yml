@@ -15,7 +15,9 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
+        distribution: 'temurin'   # must specify the JDK distribution
         java-version: '11'
+
 
     - name: Compile Java
       run: javac Main.java
