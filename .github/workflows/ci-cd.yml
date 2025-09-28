@@ -2,22 +2,22 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]  # Trigger on push to main
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    steps: 
-      # 1️⃣ Checkout code
-      - name: Checkout repository
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up Java 11 
+      # 2️⃣ Set up Java 11
       - name: Set up JDK
-        uses: actions/setup-java@v3 
-        with: 
-          distribution: 'temurin'   # Required distribution
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
           java-version: '11'
 
       # 3️⃣ Compile Java
@@ -33,7 +33,7 @@ jobs:
         run: docker build -t simple-java-web-app:latest .
 
       # 6️⃣ Push Docker image to Docker Hub
-      - name: Push Docker image to Docker Hub
+      - name: Push Docker image
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
@@ -42,21 +42,31 @@ jobs:
           docker tag simple-java-web-app:latest $DOCKER_HUB_USERNAME/simple-java-web-app:latest
           docker push $DOCKER_HUB_USERNAME/simple-java-web-app:latest
 
+      # 7️⃣ Deploy to AWS EC2
       - name: Deploy to AWS EC2
         env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          SSH_KEY_BASE64: ${{ secrets.SSH_KEY_BASE64 }}
+          EC2_USER: ${{ secrets.EC2_USER }}          # ubuntu
+          EC2_HOST: ${{ secrets.EC2_HOST }}          # your EC2 public IP
+          SSH_KEY: ${{ secrets.SSH_KEY }}            # Raja.pem content
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
-          # Decode Base64 back to PEM file
-          echo "$SSH_KEY_BASE64" | base64 --decode > key.pem
+          # Save SSH key to file
+          echo "$SSH_KEY" > key.pem
           chmod 600 key.pem
 
           # SSH into EC2 and deploy Docker container
           ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST "
+            # Install Docker if not installed
+            if ! command -v docker &> /dev/null
+            then
+              sudo apt-get update -y
+              sudo apt-get install -y docker.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker $EC2_USER
+            fi
+
             docker rm -f simple-java-web-app || true
             docker pull $DOCKER_HUB_USERNAME/simple-java-web-app:latest
             docker run -d --name simple-java-web-app -p 8080:8080 $DOCKER_HUB_USERNAME/simple-java-web-app:latest
           "
-
