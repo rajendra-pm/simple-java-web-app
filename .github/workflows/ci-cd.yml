@@ -30,7 +30,7 @@ jobs:
 
       # 5️⃣ Build Docker image
       - name: Build Docker image
-        run: docker build -t simple-java-webapp:latest .
+        run: docker build -t simple-java-web-app:latest .
 
       # 6️⃣ Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
@@ -39,8 +39,8 @@ jobs:
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         run: |
           echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-          docker tag simple-java-webapp:latest $DOCKER_HUB_USERNAME/simple-java-webapp:latest
-          docker push $DOCKER_HUB_USERNAME/simple-java-webapp:latest
+          docker tag simple-java-web-app:latest $DOCKER_HUB_USERNAME/simple-java-web-app:latest
+          docker push $DOCKER_HUB_USERNAME/simple-java-web-app:latest
 
       - name: Deploy to AWS EC2
         env:
