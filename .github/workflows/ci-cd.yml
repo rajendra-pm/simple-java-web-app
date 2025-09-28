@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+
+    - name: Compile Java
+      run: javac Main.java
+
+    - name: Run Java program
+      run: java Main
+
+    - name: Build Docker image
+      run: docker build -t simple-java-webapp:latest .
+
+    - name: Push Docker image to Docker Hub
+      env:
+        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      run: |
+        echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+        docker tag simple-java-webapp:latest $DOCKER_HUB_USERNAME/simple-java-webapp:latest
+        docker push $DOCKER_HUB_USERNAME/simple-java-webapp:latest
+
+    - name: Deploy to AWS EC2
+      env:
+        EC2_USER: ${{ secrets.EC2_USER }}
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      run: |
+        echo "$SSH_KEY" > key.pem
+        chmod 600 key.pem
+        ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST \
+          "docker pull $DOCKER_HUB_USERNAME/simple-java-webapp:latest && \
+           docker run -d --name simple-java-webapp -p 8080:8080 $DOCKER_HUB_USERNAME/simple-java-webapp:latest"
