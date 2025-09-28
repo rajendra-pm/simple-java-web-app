@@ -16,7 +16,7 @@ jobs:
       # 2️⃣ Set up Java 11
       - name: Set up JDK
         uses: actions/setup-java@v3 
-        with:
+        with: 
           distribution: 'temurin'   # Required distribution
           java-version: '11'
 
