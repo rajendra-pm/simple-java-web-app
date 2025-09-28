@@ -2,14 +2,14 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]  # Trigger on push to main branch
+    branches: [ main ]  # Trigger on push to main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -17,7 +17,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: 'temurin'   # Required distribution
           java-version: '11'
 
       # 3️⃣ Compile Java
@@ -45,13 +45,13 @@ jobs:
       # 7️⃣ Deploy to AWS EC2
       - name: Deploy to AWS EC2
         env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          SSH_KEY_BASE64: ${{ secrets.SSH_KEY_BASE64 }}
+          EC2_USER: ${{ secrets.EC2_USER }}           # e.g., ubuntu
+          EC2_HOST: ${{ secrets.EC2_HOST }}           # public IP of EC2
+          SSH_KEY: ${{ secrets.SSH_KEY }}             # content of raju.pem
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
-          # Decode Base64 key to proper PEM file
-          echo "$SSH_KEY_BASE64" | base64 --decode > key.pem
+          # Save the PEM key
+          printf "%s" "$SSH_KEY" > key.pem
           chmod 600 key.pem
 
           # SSH into EC2 and deploy Docker container
