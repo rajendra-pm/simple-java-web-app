@@ -51,7 +51,7 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
           # Save the PEM key
-          printf "%s" "$SSH_KEY" > key.pem
+          printf "%s" "$SSH_KEY" > key.pem 
           chmod 600 key.pem
 
           # SSH into EC2 and deploy Docker container
