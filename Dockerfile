@@ -4,6 +4,8 @@ FROM openjdk:11
 # Copy Java file
 COPY Main.java /app/Main.java
 
+WORKDIR /app
+
 # Compile Java file
 RUN javac /app/Main.java
 
