@@ -2,7 +2,7 @@
 # 🚀 CI/CD Pipeline with GitHub Actions, Docker, and AWS EC2 (Using SSH Key)
 
 This project demonstrates how to set up a **CI/CD pipeline** using **GitHub Actions** to build, test, containerize, and deploy a **Java application** into an **AWS EC2 instance** with Docker.  
-We are using **SSH Key (`Raja.pem`)** for authentication with the EC2 server.
+We are using **SSH Key (`Key.pem`)** for authentication with the EC2 server.
 
 ---
 
@@ -44,6 +44,6 @@ Add the following secrets in your GitHub repo:
 - `DOCKER_HUB_ACCESS_TOKEN` → Your Docker Hub access token/password  
 - `EC2_HOST` → Your EC2 Public IP (e.g., `35.xxx.xxx.xxx`)  
 - `EC2_USER` → Usually `ubuntu` (default for Ubuntu EC2 AMI)  
-- `SSH_KEY` → Copy the **full content of Raja.pem** file and paste it here  
+- `SSH_KEY` → Copy the **full content of Key.pem** file and paste it here  
 
 > ⚠️ No need for Base64 — just paste the PEM key contents directly into `SSH_KEY`.
