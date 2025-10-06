@@ -32,7 +32,7 @@ We are using **SSH Key (`Key.pem`)** for authentication with the EC2 server.
     ```
 - **Docker Hub Account** (for storing Docker images).
 - **GitHub Repository** with this project code.
-- **PEM Key (Raja.pem)** to SSH into your EC2.
+- **PEM Key (key.pem)** to SSH into your EC2.
 
 ---
 
